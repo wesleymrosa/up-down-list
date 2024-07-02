@@ -1,15 +1,14 @@
 package br.com.up_down_list.controller;
 
+import br.com.up_down_list.entity.ArquivoEntity;
 import br.com.up_down_list.service.ArquivoServise;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/arquivos")
@@ -21,7 +20,7 @@ public class ArquivoController {
         this.arquivoServise = arquivoServise;
     }
 
-    @PostMapping("/upload")
+    @PostMapping
     public ResponseEntity<String> salvar(@RequestParam("file") MultipartFile file) throws IOException {
         try {
             arquivoServise.salvarArquivo(file);
@@ -29,5 +28,11 @@ public class ArquivoController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao subir o arquivo.");
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ArquivoEntity>> listar() {
+        List<ArquivoEntity> list = arquivoServise.listarArquivos();
+        return ResponseEntity.ok().body(list);
     }
 }
