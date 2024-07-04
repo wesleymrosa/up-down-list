@@ -13,18 +13,18 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table (name = "ArquivoEntity")
+@Table(name = "ArquivoEntity")
 public class ArquivoEntity implements Serializable {
     private static final Long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue (strategy = GenerationType.AUTO)
-    @Column (name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
-    @Column (name = "nome")
+    @Column(name = "nome")
     private String nome;
-    @Column (name = "contentType")
+    @Column(name = "contentType")
     private String contentType;
-    @Column (name = "conteudo")
+    @Column(name = "conteudo")
     private byte[] conteudo;
 }

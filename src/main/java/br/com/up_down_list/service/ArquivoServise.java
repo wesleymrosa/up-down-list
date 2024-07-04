@@ -1,7 +1,9 @@
 package br.com.up_down_list.service;
 
+import br.com.up_down_list.dto.ArquivoRetornoDTO;
 import br.com.up_down_list.entity.ArquivoEntity;
 import br.com.up_down_list.repository.ArquivoRepository;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,12 +27,17 @@ public class ArquivoServise {
         return arquivoRepository.save(arquivo);
     }
 
-//    public byte[] baixarArquivo(Long id){
-//        return arquivoRepository.findBy(id).map(ArquivoEntity::getConteudo).orElse(null);
-//    }
-
-    public List<ArquivoEntity> listarArquivos () {
+    public List<ArquivoEntity> listarArquivos() {
         return arquivoRepository.findAll();
     }
 
+    public ArquivoRetornoDTO downloadArquivo(Long id) {
+        return arquivoRepository.findById(id)
+                .map(arq -> ArquivoRetornoDTO.builder()
+                        .nome(arq.getNome())
+                        .file(new ByteArrayResource(arq.getConteudo()))
+                        .build())
+                .orElse(null);
+
+    }
 }
