@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -38,6 +39,59 @@ public class ArquivoController {
             }
         } else {
             return ResponseEntity.badRequest().body("Esse arquivo não é foi salvo ! \nSomente arquivos do tipo .pdf são permitidos neste sistema !");
+        }
+    }
+
+//    @PostMapping(value = "/salvarmaisdeum")
+//    public ResponseEntity<String> salvarmaisdeum(@RequestParam("file") MultipartFile[] files) {
+//        try {
+//            for (MultipartFile file : files) {
+//                if (!file.getOriginalFilename().toLowerCase().endsWith(".pdf")) {
+//                    return ResponseEntity.badRequest().body("Esse arquivo não foi salvo! Somente arquivos do tipo .pdf são permitidos neste sistema.");
+//                }
+//                arquivoServise.salvarArquivo(file);
+//                System.out.println("O arquivo: " + file.getOriginalFilename() + " foi salvo com sucesso!");
+//                log.info("O arquivo: " + file.getOriginalFilename() + " foi salvo com sucesso!");
+//            }
+//            return ResponseEntity.status(HttpStatus.CREATED).body("Arquivos salvos com sucesso!");
+//        } catch (IOException e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao subir o arquivo.");
+//        }
+//    }
+
+    @PostMapping(value = "/salvarmaisdeum")
+    public ResponseEntity<String> salvarmaisdeum(@RequestParam("file") MultipartFile[] files) {
+        List<String> arquivosSalvos = new ArrayList<>();
+        List<String> arquivosNaoSalvos = new ArrayList<>();
+
+        try {
+            for (MultipartFile file : files) {
+                if (!file.getOriginalFilename().toLowerCase().endsWith(".pdf")) {
+                    arquivosNaoSalvos.add(file.getOriginalFilename());
+                    log.info("Os arquivos: " + arquivosNaoSalvos + " não foram salvos com sucesso !");
+                } else {
+                    arquivoServise.salvarArquivo(file);
+                    arquivosSalvos.add(file.getOriginalFilename());
+                    System.out.println("O arquivo: " + file.getOriginalFilename() + " foi salvo com sucesso!");
+                    log.info("O arquivo: " + file.getOriginalFilename() + " foi salvo com sucesso!");
+                    log.info("Os arquivos: " + arquivosSalvos + " foram salvos com sucesso !");
+                }
+            }
+
+            if (!arquivosSalvos.isEmpty()) {
+                String msg = "Arquivos salvos com sucesso: " + arquivosSalvos +  String.join(", ", arquivosSalvos);
+                log.info("Os arquivos: " + arquivosSalvos + " foram salvos com sucesso (de baixo)!");
+                return ResponseEntity.status(HttpStatus.CREATED).body(msg);
+            } else {
+                String msg = "Nenhum arquivo do tipo .pdf foi salvo.";
+                if (!arquivosNaoSalvos.isEmpty()) {
+                    msg += " Arquivos não salvos: " + String.join(", ", arquivosNaoSalvos);
+                    log.info("Os arquivos: " + arquivosNaoSalvos + " não foram salvos com sucesso (de baixo) !");
+                }
+                return ResponseEntity.badRequest().body(msg);
+            }
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao subir o arquivo.");
         }
     }
 
