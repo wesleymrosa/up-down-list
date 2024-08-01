@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ArquivoServise {
@@ -39,5 +40,13 @@ public class ArquivoServise {
                         .build())
                 .orElse(null);
 
+    }
+
+    public Optional<ArquivoEntity> findById(Long id){
+        return arquivoRepository.findById(id);
+    }
+
+    public void deletar(ArquivoEntity arquivoEntity) {
+        arquivoRepository.deleteById(arquivoEntity.getId());
     }
 }

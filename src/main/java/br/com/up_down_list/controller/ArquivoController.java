@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -105,7 +106,15 @@ public class ArquivoController {
         return ResponseEntity.ok().body(listDTO);
     }
 
-    //    @PostMapping(value = "/salvarmaisdeum")
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Object> deletar(@PathVariable(value = "id") Long id) {
+        Optional<ArquivoEntity> arquivoEntity = arquivoServise.findById(id);
+        arquivoServise.deletar(arquivoEntity.get());
+        return ResponseEntity.ok().body(id);
+    }
+}
+
+//    @PostMapping(value = "/salvarmaisdeum")
 //    public ResponseEntity<String> salvarmaisdeum(@RequestParam("file") MultipartFile[] files) {
 //        try {
 //            for (MultipartFile file : files) {
@@ -121,4 +130,4 @@ public class ArquivoController {
 //            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao subir o arquivo.");
 //        }
 //    }
-}
+
