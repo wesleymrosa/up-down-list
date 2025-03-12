@@ -114,20 +114,5 @@ public class ArquivoController {
     }
 }
 
-//    @PostMapping(value = "/salvarmaisdeum")
-//    public ResponseEntity<String> salvarmaisdeum(@RequestParam("file") MultipartFile[] files) {
-//        try {
-//            for (MultipartFile file : files) {
-//                if (!file.getOriginalFilename().toLowerCase().endsWith(".pdf")) {
-//                    return ResponseEntity.badRequest().body("Esse arquivo não foi salvo! Somente arquivos do tipo .pdf são permitidos neste sistema.");
-//                }
-//                arquivoServise.salvarArquivo(file);
-//                System.out.println("O arquivo: " + file.getOriginalFilename() + " foi salvo com sucesso!");
-//                log.info("O arquivo: " + file.getOriginalFilename() + " foi salvo com sucesso!");
-//            }
-//            return ResponseEntity.status(HttpStatus.CREATED).body("Arquivos salvos com sucesso!");
-//        } catch (IOException e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao subir o arquivo.");
-//        }
-//    }
+
 
