@@ -4,6 +4,7 @@ import br.com.up_down_list.dto.ArquivoRetornoDTO;
 import br.com.up_down_list.dto.IdNomeDTO;
 import br.com.up_down_list.entity.ArquivoEntity;
 import br.com.up_down_list.service.ArquivoServise;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -28,6 +29,7 @@ public class ArquivoController {
     private final ArquivoServise arquivoServise;
 
     @PostMapping
+    @Operation(summary = "Salva apenas um arquivo .pdf ! ", description = "Faz a persistência de um único arquivo .pdf no banco de dados.")
     public ResponseEntity<String> salvar(@RequestParam("file") MultipartFile file) throws IOException {
 
         if (file.getOriginalFilename().toLowerCase().endsWith(".pdf")) {
@@ -41,11 +43,14 @@ public class ArquivoController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao subir o arquivo.");
             }
         } else {
-            return ResponseEntity.badRequest().body("Esse arquivo não é foi salvo ! \nSomente arquivos do tipo .pdf são permitidos neste sistema !");
+            return ResponseEntity.badRequest().body
+                    ("Esse arquivo não é foi salvo ! \nSomente arquivos do tipo .pdf são permitidos neste sistema !");
         }
     }
 
     @PostMapping(value = "/salvarmaisdeum")
+    @Operation(summary = "Salva mais de um arquivo .pdf por vez ! ", description =
+            "Faz a persistência de mais de um arquivo .pdf ,por vez, no banco de dados.")
     public ResponseEntity<String> salvarmaisdeum(@RequestParam("file") MultipartFile[] files) {
         List<String> arquivosSalvos = new ArrayList<>();
         List<String> arquivosNaoSalvos = new ArrayList<>();
@@ -65,7 +70,8 @@ public class ArquivoController {
             }
 
             if (!arquivosSalvos.isEmpty()) {
-                String msg = "Arquivos salvos com sucesso: " + arquivosSalvos + String.join(", ", arquivosSalvos);
+                String msg = "Arquivos salvos com sucesso: " + arquivosSalvos + String.join(", ",
+                        arquivosSalvos);
                 log.info("Os arquivos: " + arquivosSalvos + " foram salvos com sucesso (de baixo)!");
                 return ResponseEntity.status(HttpStatus.CREATED).body(msg);
             } else {
@@ -82,24 +88,31 @@ public class ArquivoController {
     }
 
     @GetMapping
+    @Operation(summary = "Lista todos os arquivos .pdf que estiverem salvos", description =
+            "Retorna uma lista com todos os arquivos .pdf persistidos no banco de dados.")
     public ResponseEntity<List<ArquivoEntity>> listar() {
         List<ArquivoEntity> list = arquivoServise.listarArquivos();
         return ResponseEntity.ok().body(list);
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Mostra cada arquivo individualmente pelo seu id !", description =
+            "Retorna um arquivo pelo seu id")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long id) {
         try {
             ArquivoRetornoDTO arquivoRetornoDTO = arquivoServise.downloadArquivo(id);
             log.info("A solicitação corresponde ao arquivo: " + arquivoRetornoDTO.getNome());
             System.out.println("A solicitação corresponde ao arquivo: " + arquivoRetornoDTO.getNome());
-            return ResponseEntity.ok().header("Content-Disposition", "attachment; filename=\"" + arquivoRetornoDTO.getNome().concat(".pdf") + "\"").body(arquivoRetornoDTO.getFile());
+            return ResponseEntity.ok().header("Content-Disposition", "attachment; " +
+                            "filename=\"" + arquivoRetornoDTO.getNome().concat(".pdf") + "\"")
+                    .body(arquivoRetornoDTO.getFile());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
     @GetMapping(value = "/listarpornome")
+    @Operation(summary = "Mostra cada arquivo pelo seu nome !", description = "Retorna um arquivo pelo seu nome.")
     public ResponseEntity<List<IdNomeDTO>> findAll() {
         List<ArquivoEntity> list = arquivoServise.listarArquivos();
         List<IdNomeDTO> listDTO = list.stream().map(obj -> new IdNomeDTO(obj)).collect(Collectors.toList());
@@ -107,6 +120,7 @@ public class ArquivoController {
     }
 
     @DeleteMapping(value = "/{id}")
+    @Operation(summary = "Apaga o arquivo pelo seu nome ! ", description = "Deleta um arquivo pelo seu id.")
     public ResponseEntity<Object> deletar(@PathVariable(value = "id") Long id) {
         Optional<ArquivoEntity> arquivoEntity = arquivoServise.findById(id);
         arquivoServise.deletar(arquivoEntity.get());
